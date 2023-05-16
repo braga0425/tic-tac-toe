@@ -26,15 +26,14 @@ def winner_check(board, player):
     return False
 
 
-def play_check(board, player):
+def play_check(board, player, game_mode):
     while True:
-        if player == 'X':
+        if game_mode == '1' or player == 'X':
             show_board(board)
             play = input('Jogador ' + player + ', faça sua jogada (posição de 1 a 9): ')
             position = int(play) - 1
         else:
             position = random.randint(0, 8)
-            position += 1
 
         if position in range(9) and board[position // 3][position % 3] == ' ':
             return position
@@ -44,19 +43,25 @@ def play_check(board, player):
 
 def play_tic_tac_toe():
     board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
-    player = 'X'
+    players = ['X', 'O']
+    random.shuffle(players)
+    current_player = players[0]
+    game_mode = input('Escolha o modo de jogo:\n1. Jogar contra outra pessoa\n2. Jogar contra a máquina\nDigite o número correspondente: ')
 
     while True:
-        position = play_check(board, player)
+        position = play_check(board, current_player, game_mode)
 
-        board[position // 3][position % 3] = player
+        board[position // 3][position % 3] = current_player
 
-        if winner_check(board, player):
+        if winner_check(board, current_player):
             show_board(board)
-            if player == 'X':
-                print('\nParabéns, Jogador ' + player + ' ganhou!')
+            if current_player == 'X':
+                print('\nParabéns, Jogador ' + current_player + ' ganhou!')
             else:
-                print('\nDesculpe, você perdeu para a máquina!')
+                if game_mode == '2':
+                    print('\nDesculpe, você perdeu para a máquina!')
+                else:
+                    print('\nParabéns, Jogador ' + current_player + ' ganhou!')
             return
 
         if all(board[i][j] != ' ' for i in range(3) for j in range(3)):
@@ -64,14 +69,11 @@ def play_tic_tac_toe():
             print('\nEmpate!')
             return
 
-        if player == 'X':
-            player = 'O'
-        else:
-            player = 'X'
+        current_player = players[1] if current_player == players[0] else players[0]
 
 
 play_again = True
 while play_again:
     play_tic_tac_toe()
-    response = input('\nVocê gostaria de jogar de novo? (y/n) ')
-    play_again = (response.lower() == 'y')
+    response = input('\nVocê gostaria de jogar de novo? (s/n) ')
+    play_again = (response.lower() == 's')
