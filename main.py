@@ -1,9 +1,15 @@
+import random
+
 def show_board(board):
-    print("\n  0 1 2")
+    print('\n')
+    position = 1
     for i in range(3):
-        print(i, end=" ")
         for j in range(3):
-            print(board[i][j], end=" ")
+            if board[i][j] == ' ':
+                print(position, end=' ')
+            else:
+                print(board[i][j], end=' ')
+            position += 1
         print()
 
 
@@ -20,48 +26,52 @@ def winner_check(board, player):
     return False
 
 
-def play_check(player):
+def play_check(board, player):
     while True:
-        play = input("\nJogador " + player + ", faça sua play (linha + coluna, com espaço entre os números): ")
-        lin, col = play.split()
+        if player == 'X':
+            show_board(board)
+            play = input('Jogador ' + player + ', faça sua jogada (posição de 1 a 9): ')
+            position = int(play) - 1
+        else:
+            position = random.randint(0, 8)
+            position += 1
 
-        if lin.isdigit() and col.isdigit() and int(lin) in range(3) and int(col) in range(3):
-            return int(lin), int(col)
+        if position in range(9) and board[position // 3][position % 3] == ' ':
+            return position
 
-        print("\nJogada inválida, tente novamente.\n")
+        print('\nJogada inválida, tente novamente!')
 
 
 def play_tic_tac_toe():
-    board = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
-    player = "X"
+    board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
+    player = 'X'
 
     while True:
-        show_board(board)
-        lin, col = play_check(player)
-        if board[lin][col] != " ":
-            print("\nJogada inválida, tente novamente.\n")
-            continue
+        position = play_check(board, player)
 
-        board[lin][col] = player
+        board[position // 3][position % 3] = player
 
         if winner_check(board, player):
             show_board(board)
-            print("\nParabéns, jogador " + player + " venceu!")
+            if player == 'X':
+                print('\nParabéns, Jogador ' + player + ' ganhou!')
+            else:
+                print('\nDesculpe, você perdeu para a máquina!')
             return
 
-        if " " not in board[0] and " " not in board[1] and " " not in board[2]:
+        if all(board[i][j] != ' ' for i in range(3) for j in range(3)):
             show_board(board)
-            print("\nEmpate!")
+            print('\nEmpate!')
             return
 
-        if player == "X":
-            player = "O"
+        if player == 'X':
+            player = 'O'
         else:
-            player = "X"
+            player = 'X'
 
 
 play_again = True
 while play_again:
     play_tic_tac_toe()
-    response = input("\nDeseja jogar novamente? (s/n) ")
-    play_again = (response.lower() == "s")
+    response = input('\nVocê gostaria de jogar de novo? (y/n) ')
+    play_again = (response.lower() == 'y')
